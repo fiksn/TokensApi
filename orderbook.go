@@ -32,8 +32,8 @@ type AskOrder Quotation // also ascending
 func (v AskOrder) Len() int      { return len(v) }
 func (v AskOrder) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
 func (a AskOrder) Less(i, j int) bool {
-	first, err := decimal.NewFromString(a[i][0].String())
-	second, err := decimal.NewFromString(a[j][0].String())
+	first, err := decimal.NewFromString(a[i][1].String())
+	second, err := decimal.NewFromString(a[j][1].String())
 
 	if err != nil {
 		return false
@@ -42,6 +42,9 @@ func (a AskOrder) Less(i, j int) bool {
 	return first.Cmp(second) < 0
 }
 
+/**
+* Get liquidity in counter currency (e.g., USDT).
+ */
 func (me *Quotation) GetLiquidity() decimal.Decimal {
 	sum := decimal.New(0, 0)
 
@@ -94,12 +97,17 @@ func (me *Quotation) VolumeInOtherUnit() *Quotation {
 			continue
 		}
 
-		created[i][1] = json.Number(onePrice.Mul(oneVolume).StringFixedBank(8))
+		created[i][0] = json.Number(onePrice.Mul(oneVolume).StringFixedBank(8))
 	}
 
 	return &created
 }
 
+/**
+* What price would I get if I offered given amount of units of base currency (e.g., BTC)?
+* Price is in counter currency (e.g., USDT), Limit is what I need to provide for order to go through
+* (limit >= price in the ask scenario and limit <= price in the bid scenario).
+ */
 func (me *Quotation) GetPriceFor(units decimal.Decimal) (price decimal.Decimal, limit decimal.Decimal) {
 	amountSum, priceAmountSum := decimal.New(0, 0), decimal.New(0, 0)
 	price, limit = decimal.New(0, 0), decimal.New(0, 0)
@@ -128,6 +136,8 @@ func (me *Quotation) GetPriceFor(units decimal.Decimal) (price decimal.Decimal, 
 			return
 		}
 	}
+
+	// Not enough liquidity
 
 	return
 }
