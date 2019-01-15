@@ -58,13 +58,13 @@ func request(url string) []byte {
 	}
 	resp, err := client.Get(url)
 	if err != nil {
-		glog.Warningf("requestAuth error %v", err)
+		glog.Warningf("request error %v", err)
 		return nil
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		glog.Warningf("requestAuth error %v", err)
+		glog.Warningf("request error %v", err)
 		return nil
 	}
 

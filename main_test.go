@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/glog"
+	"github.com/shopspring/decimal"
 )
 
 func TestStuff(t *testing.T) {
@@ -20,6 +21,8 @@ func TestStuff(t *testing.T) {
 		i++
 	}
 
-	fmt.Println("burek")
-	fmt.Println(i)
+	resp2, err := GetOrderBook("btcusdt")
+	fmt.Printf("FOO: %v %v LIQ %v %v\n", resp2.Status, resp2.Asks, resp2.Asks.GetLiquidity(), resp2.Bids.GetLiquidity())
+	price, limit := resp2.Asks.GetPriceFor(decimal.NewFromFloat(12))
+	fmt.Printf("price %v, limit %v\n", price, limit)
 }
