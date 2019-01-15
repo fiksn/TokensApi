@@ -1,0 +1,7 @@
+credentials
+.vscode
+TokensApi
+debug
+release
+main
+*.secret
