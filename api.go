@@ -19,8 +19,16 @@ const (
 	MakerFeePercent = 0
 )
 
+type Interval int
+
+const (
+	DAY = iota
+	HOUR
+	MINUTE
+)
+
 /**
-* Obtain supported trading pairs.
+* List all existing pairs.
  */
 func GetTradingPairs() (TradingPairResp, error) {
 	var resp TradingPairResp
@@ -109,6 +117,86 @@ func GetBalance(currency string) (BalanceResp, error) {
 	}
 
 	glog.V(2).Infof("GetBalance resp %v", string(jsonBlob))
+
+	err := json.Unmarshal(jsonBlob, &resp)
+
+	if err != nil {
+		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
+		return resp, err
+	}
+
+	if resp.Status != "ok" {
+		return resp, errors.New(resp.Status)
+	}
+
+	return resp, nil
+}
+
+/**
+* Get ticker for last day or hour.
+ */
+func GetTicker(pair string, interval Interval) (TickerResp, error) {
+	var (
+		resp TickerResp
+		url  string
+	)
+
+	switch interval {
+	case HOUR:
+		url = fmt.Sprintf("/public/ticker/hour/%s/", pair)
+	case DAY:
+		url = fmt.Sprintf("/public/ticker/%s/", pair)
+	default:
+		return resp, errors.New("Illegal interval specified")
+	}
+
+	jsonBlob := request(TokensBaseUrl + url)
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("GetTicker resp %v", string(jsonBlob))
+
+	err := json.Unmarshal(jsonBlob, &resp)
+
+	if err != nil {
+		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
+		return resp, err
+	}
+
+	if resp.Status != "ok" {
+		return resp, errors.New(resp.Status)
+	}
+
+	return resp, nil
+}
+
+/**
+* List trades, which occured in last minute, hour or day.
+ */
+func GetTrades(pair string, interval Interval) (TradesResp, error) {
+	var (
+		resp TradesResp
+		url  string
+	)
+
+	switch interval {
+	case HOUR:
+		url = fmt.Sprintf("/public/trades/hour/%s/", pair)
+	case DAY:
+		url = fmt.Sprintf("/public/trades/day/%s/", pair)
+	case MINUTE:
+		url = fmt.Sprintf("/public/trades/minute/%s/", pair)
+	default:
+		return resp, errors.New("Illegal interval specified")
+	}
+
+	jsonBlob := request(TokensBaseUrl + url)
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("GetTrades resp %v", string(jsonBlob))
 
 	err := json.Unmarshal(jsonBlob, &resp)
 
