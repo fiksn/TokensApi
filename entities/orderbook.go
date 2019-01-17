@@ -2,7 +2,7 @@
  * Copyright (C) 2019 Gregor Pogačnik
  */
 
-package TokensApi
+package entities
 
 import (
 	"encoding/json"

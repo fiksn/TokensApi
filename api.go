@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"sort"
 
+	"TokensApi/entities"
 	"github.com/golang/glog"
 )
 
@@ -30,8 +31,8 @@ const (
 /**
 * List all existing pairs.
  */
-func GetTradingPairs() (TradingPairResp, error) {
-	var resp TradingPairResp
+func GetTradingPairs() (entities.TradingPairResp, error) {
+	var resp entities.TradingPairResp
 
 	jsonBlob := request(TokensBaseUrl + "/public/trading-pairs/get/all/")
 	glog.V(2).Infof("GetTradingPairs resp %v", string(jsonBlob))
@@ -78,8 +79,8 @@ func GetAllCurrencies() ([]string, error) {
 /**
 * Get order book.
  */
-func GetOrderBook(pair string) (OrderBookResp, error) {
-	var resp OrderBookResp
+func GetOrderBook(pair string) (entities.OrderBookResp, error) {
+	var resp entities.OrderBookResp
 
 	jsonBlob := request(TokensBaseUrl + fmt.Sprintf("/public/order-book/%s/", pair))
 	if jsonBlob == nil {
@@ -99,8 +100,8 @@ func GetOrderBook(pair string) (OrderBookResp, error) {
 		return resp, errors.New(resp.Status)
 	}
 
-	sort.Sort(AskOrder(resp.Asks))
-	sort.Sort(sort.Reverse(AskOrder(resp.Bids)))
+	sort.Sort(entities.AskOrder(resp.Asks))
+	sort.Sort(sort.Reverse(entities.AskOrder(resp.Bids)))
 
 	return resp, nil
 }
@@ -108,8 +109,8 @@ func GetOrderBook(pair string) (OrderBookResp, error) {
 /**
 * Get balance.
  */
-func GetBalance(currency string) (BalanceResp, error) {
-	var resp BalanceResp
+func GetBalance(currency string) (entities.BalanceResp, error) {
+	var resp entities.BalanceResp
 
 	jsonBlob := requestAuth(TokensBaseUrl + fmt.Sprintf("/private/balance/%s/", currency))
 	if jsonBlob == nil {
@@ -135,9 +136,9 @@ func GetBalance(currency string) (BalanceResp, error) {
 /**
 * Get ticker for last day or hour.
  */
-func GetTicker(pair string, interval Interval) (TickerResp, error) {
+func GetTicker(pair string, interval Interval) (entities.TickerResp, error) {
 	var (
-		resp TickerResp
+		resp entities.TickerResp
 		url  string
 	)
 
@@ -174,9 +175,9 @@ func GetTicker(pair string, interval Interval) (TickerResp, error) {
 /**
 * List trades, which occured in last minute, hour or day.
  */
-func GetTrades(pair string, interval Interval) (TradesResp, error) {
+func GetTrades(pair string, interval Interval) (entities.TradesResp, error) {
 	var (
-		resp TradesResp
+		resp entities.TradesResp
 		url  string
 	)
 
