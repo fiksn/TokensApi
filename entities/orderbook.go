@@ -21,10 +21,9 @@ type OrderBook struct {
 }
 
 type OrderBookResp struct {
-	Timestamp timestamp `json:"timestamp" description:"Timestamp"`
-	Status    string    `json:"status" description:"Status"`
-	Bids      Quotation `json:"bids" description:"Bids (buy requests)"`
-	Asks      Quotation `json:"asks" description:"Asks (sell requests)"`
+	Base
+	Bids Quotation `json:"bids" description:"Bids (buy requests)"`
+	Asks Quotation `json:"asks" description:"Asks (sell requests)"`
 }
 
 type AskOrder Quotation // also ascending

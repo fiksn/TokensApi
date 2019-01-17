@@ -11,6 +11,7 @@ import (
 	"sort"
 
 	"TokensApi/entities"
+
 	"github.com/golang/glog"
 )
 
@@ -198,6 +199,33 @@ func GetTrades(pair string, interval Interval) (entities.TradesResp, error) {
 	}
 
 	glog.V(2).Infof("GetTrades resp %v", string(jsonBlob))
+
+	err := json.Unmarshal(jsonBlob, &resp)
+
+	if err != nil {
+		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
+		return resp, err
+	}
+
+	if resp.Status != "ok" {
+		return resp, errors.New(resp.Status)
+	}
+
+	return resp, nil
+}
+
+/**
+ * List all currencies participating in voting and number of votes for each currency.
+ */
+func GetVotes() (entities.VotesResp, error) {
+	var resp entities.VotesResp
+
+	jsonBlob := request(TokensBaseUrl + "/public/voting/get/all/")
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("GetVotes resp %v", string(jsonBlob))
 
 	err := json.Unmarshal(jsonBlob, &resp)
 

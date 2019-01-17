@@ -6,10 +6,16 @@ package entities
 
 import "encoding/json"
 
+type OrderType string
+
+const (
+	BUY  OrderType = "buy"
+	SELL OrderType = "sell"
+)
+
 type TradesResp struct {
-	Status    string    `json:"status" description:"Status"`
-	Timestamp timestamp `json:"timestamp" description:"Timestamp"`
-	Trades    []Trade   `json:"trades" description:"Timestamp"`
+	Base
+	Trades []Trade `json:"trades" description:"Timestamp"`
 }
 
 type Trade struct {
@@ -17,5 +23,5 @@ type Trade struct {
 	Datetime timestamp   `json:"datetime" description:"Timestamp of trade"`
 	Price    json.Number `json:"price,string" description:"Price of trade."`
 	Amount   json.Number `json:"amount,string" description:"Amount of trade."`
-	Type     string      `json:"type" description:"Either buy or sell"`
+	Type     OrderType   `json:"type" description:"Either buy or sell"`
 }
