@@ -18,7 +18,15 @@ func (t timestamp) MarshalJSON() ([]byte, error) {
 }
 
 func (t *timestamp) UnmarshalJSON(data []byte) error {
-	i, err := strconv.ParseInt(string(data[:]), 10, 64)
+	str := string(data[:])
+
+	// Hack to support null response
+	if str == "null" {
+		t.Time = time.Unix(0, 0)
+		return nil
+	}
+
+	i, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
 		return err
 	}

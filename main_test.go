@@ -33,11 +33,19 @@ func TestStuff(t *testing.T) {
 	fmt.Println(resp4)
 
 	Init("./credentials")
-	resp3, err := GetBalance("btc")
+	resp3, err := GetBalance("eur")
 	fmt.Println(resp3.Timestamp)
 	fmt.Println(resp3)
 
 	resp32, err := GetVotes()
 
 	fmt.Println(resp32)
+
+	fmt.Println(len(resp32.WinnerList))
+
+	fmt.Println(len(resp32.ActiveList))
+
+	respX, err := GetAllOrders()
+	fmt.Println(respX)
+
 }

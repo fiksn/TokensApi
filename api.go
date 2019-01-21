@@ -8,11 +8,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"sort"
 
 	"TokensApi/entities"
 
 	"github.com/golang/glog"
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -90,15 +92,9 @@ func GetOrderBook(pair string) (entities.OrderBookResp, error) {
 
 	glog.V(2).Infof("GetOrderBook resp %v", string(jsonBlob))
 
-	err := json.Unmarshal(jsonBlob, &resp)
-
+	err := deserialize(jsonBlob, &resp)
 	if err != nil {
-		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
 		return resp, err
-	}
-
-	if resp.Status != "ok" {
-		return resp, errors.New(resp.Status)
 	}
 
 	sort.Sort(entities.AskOrder(resp.Asks))
@@ -120,18 +116,8 @@ func GetBalance(currency string) (entities.BalanceResp, error) {
 
 	glog.V(2).Infof("GetBalance resp %v", string(jsonBlob))
 
-	err := json.Unmarshal(jsonBlob, &resp)
-
-	if err != nil {
-		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
-		return resp, err
-	}
-
-	if resp.Status != "ok" {
-		return resp, errors.New(resp.Status)
-	}
-
-	return resp, nil
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
 }
 
 /**
@@ -159,18 +145,8 @@ func GetTicker(pair string, interval Interval) (entities.TickerResp, error) {
 
 	glog.V(2).Infof("GetTicker resp %v", string(jsonBlob))
 
-	err := json.Unmarshal(jsonBlob, &resp)
-
-	if err != nil {
-		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
-		return resp, err
-	}
-
-	if resp.Status != "ok" {
-		return resp, errors.New(resp.Status)
-	}
-
-	return resp, nil
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
 }
 
 /**
@@ -200,18 +176,8 @@ func GetTrades(pair string, interval Interval) (entities.TradesResp, error) {
 
 	glog.V(2).Infof("GetTrades resp %v", string(jsonBlob))
 
-	err := json.Unmarshal(jsonBlob, &resp)
-
-	if err != nil {
-		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
-		return resp, err
-	}
-
-	if resp.Status != "ok" {
-		return resp, errors.New(resp.Status)
-	}
-
-	return resp, nil
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
 }
 
 /**
@@ -227,16 +193,97 @@ func GetVotes() (entities.VotesResp, error) {
 
 	glog.V(2).Infof("GetVotes resp %v", string(jsonBlob))
 
-	err := json.Unmarshal(jsonBlob, &resp)
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
 
+/**
+ * Cancel an order
+ */
+func CancelOrder(id uuid.UUID) (entities.Base, error) {
+	var resp entities.Base
+
+	jsonBlob := requestAuthPost(TokensBaseUrl+fmt.Sprintf("/private/orders/cancel/%s/", id), url.Values{})
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("CancelOrder resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
+
+/**
+ * Cancel all outstanding orders.
+ */
+func CancelAllOrders() error {
+	orders, err := GetAllOrders()
 	if err != nil {
-		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
-		return resp, err
+		return err
 	}
 
-	if resp.Status != "ok" {
-		return resp, errors.New(resp.Status)
+	for _, order := range orders.OpenOrders {
+		fl, err := order.RemainingAmount.Float64()
+
+		if err != nil || fl <= 0 {
+			glog.Warningf("Order %v has a strange remaining amount %v", order.Id, order.RemainingAmount)
+		}
+
+		glog.V(2).Infof("Canceling order %v", order.Id)
+		CancelOrder(order.Id)
 	}
 
-	return resp, nil
+	return nil
+}
+
+/**
+ * Get order details
+ */
+func GetOrderDetails(id uuid.UUID) (entities.OrderDetailsResp, error) {
+	var resp entities.OrderDetailsResp
+
+	jsonBlob := requestAuth(TokensBaseUrl + fmt.Sprintf("/private/orders/get/%s/", id))
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("GetOrderDetails resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
+
+/**
+ * Get all orders.
+ */
+func GetAllOrders() (entities.OrdersResp, error) {
+	var resp entities.OrdersResp
+
+	jsonBlob := requestAuth(TokensBaseUrl + "/private/orders/get/all/")
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("GetAllOrders resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
+
+/**
+ * Get all orders for currency pair.
+ */
+func GetAllOrdersFor(pair string) (entities.OrdersResp, error) {
+	var resp entities.OrdersResp
+
+	jsonBlob := requestAuth(TokensBaseUrl + fmt.Sprintf("/private/orders/get/%s/", pair))
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("GetAllOrdersFor resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
 }

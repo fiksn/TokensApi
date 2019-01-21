@@ -5,10 +5,12 @@
 package TokensApi
 
 import (
+	"TokensApi/entities"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -139,4 +141,28 @@ func requestAuth(url string) []byte {
 	}
 
 	return body
+}
+
+func deserialize(jsonBlob []byte, resp entities.Statuser) (err error) {
+
+	var errorEntity entities.ErrorResp
+
+	err = json.Unmarshal(jsonBlob, resp)
+
+	if err != nil {
+		glog.Warningf("Unable to unmarshal json blob: %v (%v)", string(jsonBlob), err)
+		resp.SetStatus("error")
+		return err
+	}
+
+	if resp.GetStatus() != "ok" {
+		err = json.Unmarshal(jsonBlob, &errorEntity)
+		if err != nil {
+			return errors.New(errorEntity.Reason)
+		}
+
+		return errors.New(resp.GetStatus())
+	}
+
+	return nil
 }
