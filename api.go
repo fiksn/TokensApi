@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"net/url"
 	"sort"
+	"strconv"
+	"time"
 
 	"TokensApi/entities"
 
@@ -47,36 +49,6 @@ func GetTradingPairs() (entities.TradingPairResp, error) {
 	}
 
 	return resp, nil
-}
-
-/**
-* Get all supported currency codes.
- */
-func GetAllCurrencies() ([]string, error) {
-	resp, err := GetTradingPairs()
-	if err != nil {
-		return nil, err
-	}
-
-	set := make(map[string]bool, len(resp))
-
-	for _, pair := range resp {
-		if !set[pair.BaseCurrency] {
-			set[pair.BaseCurrency] = true
-		}
-		if !set[pair.CounterCurrency] {
-			set[pair.CounterCurrency] = true
-		}
-	}
-
-	ret := make([]string, len(set))
-	idx := 0
-	for key := range set {
-		ret[idx] = key
-		idx++
-	}
-
-	return ret, nil
 }
 
 /**
@@ -198,7 +170,7 @@ func GetVotes() (entities.VotesResp, error) {
 }
 
 /**
- * Cancel an order
+ * Cancel an order by id.
  */
 func CancelOrder(id uuid.UUID) (entities.Base, error) {
 	var resp entities.Base
@@ -215,26 +187,55 @@ func CancelOrder(id uuid.UUID) (entities.Base, error) {
 }
 
 /**
- * Cancel all outstanding orders.
+ * Place an order.
  */
-func CancelAllOrders() error {
-	orders, err := GetAllOrders()
-	if err != nil {
-		return err
+func PlaceOrder(
+	pair string,
+	side entities.OrderType,
+	amount float64,
+	price float64,
+	takeProfitPrice float64,
+	expireDate *time.Time) (entities.PlaceOrderResp, error) {
+	var resp entities.PlaceOrderResp
+
+	resp.SetStatus("error")
+
+	data := url.Values{}
+
+	if amount <= 0 {
+		return resp, errors.New("Negative amount is not allowed")
 	}
 
-	for _, order := range orders.OpenOrders {
-		fl, err := order.RemainingAmount.Float64()
-
-		if err != nil || fl <= 0 {
-			glog.Warningf("Order %v has a strange remaining amount %v", order.Id, order.RemainingAmount)
-		}
-
-		glog.V(2).Infof("Canceling order %v", order.Id)
-		CancelOrder(order.Id)
+	if price <= 0 {
+		return resp, errors.New("Negative price is not allowed")
 	}
 
-	return nil
+	if side != entities.BUY && side != entities.SELL {
+		return resp, errors.New("Only buy or sell orders are supported")
+	}
+
+	data.Add("pair", pair)
+	data.Add("side", string(side))
+	data.Add("amount", strconv.FormatFloat(amount, 'f', 64, 64))
+	data.Add("price", strconv.FormatFloat(price, 'f', 64, 64))
+
+	if takeProfitPrice > 0 {
+		data.Add("takeProfitPrice", strconv.FormatFloat(takeProfitPrice, 'f', 64, 64))
+	}
+
+	if expireDate != nil {
+		data.Add("expireDate", strconv.FormatInt(expireDate.Unix(), 10))
+	}
+
+	jsonBlob := requestAuthPost(TokensBaseUrl+"/private/orders/add/limit/", data)
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("PlaceOrder resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
 }
 
 /**

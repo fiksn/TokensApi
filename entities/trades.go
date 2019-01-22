@@ -6,13 +6,6 @@ package entities
 
 import "encoding/json"
 
-type OrderType string
-
-const (
-	BUY  OrderType = "buy"
-	SELL OrderType = "sell"
-)
-
 type TradesResp struct {
 	Base
 	Trades []Trade `json:"trades" description:"Timestamp"`

@@ -10,6 +10,13 @@ import (
 	"github.com/satori/go.uuid"
 )
 
+type OrderType string
+
+const (
+	BUY  OrderType = "buy"
+	SELL OrderType = "sell"
+)
+
 type OrderDetails string
 
 const (
@@ -48,4 +55,9 @@ type OrderDetailsResp struct {
 type ExtendedTrade struct {
 	Trade
 	Value json.Number `json:"value,string" description:"Value is price * amount"`
+}
+
+type PlaceOrderResp struct {
+	Base
+	OrderId uuid.UUID `json:"orderId" description:"ID"`
 }
