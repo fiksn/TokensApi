@@ -4,14 +4,22 @@
 package TokensApi
 
 import (
+	"TokensApi/entities"
+	"flag"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/golang/glog"
 	"github.com/shopspring/decimal"
 )
 
 func TestStuff(t *testing.T) {
+
+	// Be able to pass -myV to go test
+	var myV = flag.Int("myV", 0, "test")
+	flag.Lookup("v").Value.Set(fmt.Sprint(*myV))
+
 	resp, err := GetTradingPairs()
 
 	if err != nil {
@@ -19,9 +27,17 @@ func TestStuff(t *testing.T) {
 	}
 
 	i := 0
-	for _, pair := range resp {
+	for key, pair := range resp {
+		fmt.Println(key)
 		fmt.Println(pair)
 		i++
+	}
+
+	Init("./credentials")
+
+	balance := GetBalances(true)
+	for _, b := range balance {
+		fmt.Println(b)
 	}
 
 	resp2, err := GetOrderBook("btcusdt")
@@ -32,20 +48,35 @@ func TestStuff(t *testing.T) {
 	resp4, err := GetAllCurrencies()
 	fmt.Println(resp4)
 
-	Init("./credentials")
-	resp3, err := GetBalance("eur")
-	fmt.Println(resp3.Timestamp)
-	fmt.Println(resp3)
+	fmt.Println("???")
 
-	resp32, err := GetVotes()
+	expiryTime := time.Now().Add(time.Second * 5)
+	respY, err := PlaceOrder("eursusdt", entities.BUY,
+		2, 2,
+		1, 5,
+		3,
+		&expiryTime)
 
-	fmt.Println(resp32)
+	fmt.Println(respY)
+	fmt.Println("Error for place ")
+	fmt.Println(err)
 
-	fmt.Println(len(resp32.WinnerList))
-
-	fmt.Println(len(resp32.ActiveList))
+	balance = GetBalances(true)
+	for _, b := range balance {
+		fmt.Println(b)
+	}
 
 	respX, err := GetAllOrders()
 	fmt.Println(respX)
+
+	time.Sleep(10 * time.Second)
+
+	err = CancelAllOrders()
+	fmt.Println(err)
+
+	respX, err = GetAllOrders()
+	fmt.Println(respX)
+
+	fmt.Println("???")
 
 }

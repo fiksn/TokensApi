@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -81,27 +82,42 @@ func calcHmac(key string, message string) string {
 }
 
 func requestAuthPost(url string, data url.Values) []byte {
-	unixTime := strconv.Itoa(int(time.Now().UnixNano() / 1000))
-
-	data.Add("key", Credentials.APIKey)
-	data.Add("nonce", unixTime)
-	signature := calcHmac(Credentials.APISecret, unixTime+Credentials.APIKey)
-	data.Add("signature", signature)
-
-	client := http.Client{
-		Timeout: Timeout,
-	}
-	glog.V(3).Infof("requestAuth url: %v data %v\n", url, data)
-
-	resp, err := client.PostForm(url, data)
-	if err != nil {
-		glog.Warningf("requestAuth error %v", err)
+	if Credentials == nil {
+		glog.Warningf("requestAuthPost - credentials were not set, you might need to call Init()")
 		return nil
 	}
+
+	unixTime := strconv.Itoa(int(time.Now().UnixNano() / 1000))
+
+	req, err := http.NewRequest("POST", url, strings.NewReader(data.Encode()))
+	if err != nil {
+		glog.Warningf("requestAuthPost error %v", err)
+		return nil
+	}
+
+	fmt.Println(data)
+
+	req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("key", Credentials.APIKey)
+	req.Header.Set("nonce", unixTime)
+	signature := calcHmac(Credentials.APISecret, unixTime+Credentials.APIKey)
+	req.Header.Set("signature", signature)
+
+	client := &http.Client{Timeout: Timeout}
+
+	glog.V(3).Infof("requestAuthPost url: %v data %v\n", url, data)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		glog.Warningf("requestAuthPost error %v", err)
+		return nil
+	}
+
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		glog.Warningf("requestAuth error %v", err)
+		glog.Warningf("requestAuthPost error %v", err)
 		return nil
 	}
 
@@ -109,6 +125,11 @@ func requestAuthPost(url string, data url.Values) []byte {
 }
 
 func requestAuth(url string) []byte {
+	if Credentials == nil {
+		glog.Warningf("requestAuth - credentials were not set, you might need to call Init()")
+		return nil
+	}
+
 	unixTime := strconv.Itoa(int(time.Now().UnixNano() / 1000))
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -157,7 +178,7 @@ func deserialize(jsonBlob []byte, resp entities.Statuser) (err error) {
 
 	if resp.GetStatus() != "ok" {
 		err = json.Unmarshal(jsonBlob, &errorEntity)
-		if err != nil {
+		if err == nil {
 			return errors.New(errorEntity.Reason)
 		}
 

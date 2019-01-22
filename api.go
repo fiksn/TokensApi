@@ -193,7 +193,9 @@ func PlaceOrder(
 	pair string,
 	side entities.OrderType,
 	amount float64,
+	amountDecimals int,
 	price float64,
+	priceDecimals int,
 	takeProfitPrice float64,
 	expireDate *time.Time) (entities.PlaceOrderResp, error) {
 	var resp entities.PlaceOrderResp
@@ -214,13 +216,13 @@ func PlaceOrder(
 		return resp, errors.New("Only buy or sell orders are supported")
 	}
 
-	data.Add("pair", pair)
+	data.Add("tradingPair", pair)
 	data.Add("side", string(side))
-	data.Add("amount", strconv.FormatFloat(amount, 'f', 64, 64))
-	data.Add("price", strconv.FormatFloat(price, 'f', 64, 64))
+	data.Add("amount", strconv.FormatFloat(amount, 'f', amountDecimals, 64))
+	data.Add("price", strconv.FormatFloat(price, 'f', priceDecimals, 64))
 
 	if takeProfitPrice > 0 {
-		data.Add("takeProfitPrice", strconv.FormatFloat(takeProfitPrice, 'f', 64, 64))
+		data.Add("takeProfitPrice", strconv.FormatFloat(takeProfitPrice, 'f', priceDecimals, 64))
 	}
 
 	if expireDate != nil {
