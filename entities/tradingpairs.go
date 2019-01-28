@@ -9,7 +9,7 @@ import "encoding/json"
 type TradingPair struct {
 	PriceDecimals   int         `json:"priceDecimals" description:"Decimals for price"`
 	AmountDecimals  int         `json:"amountDecimals" description:"Decimals for amount"`
-	MinAmount       json.Number `json:"minAmount" description:"Minimum amount."`
+	MinAmount       json.Number `json:"minAmount" description:"Minimum amount of base currency."`
 	BaseCurrency    string      `json:"baseCurrency" description:"Base currency."`
 	CounterCurrency string      `json:"counterCurrency" description:"Counter currency."`
 	Title           string      `json:"title" description:"Title."`
