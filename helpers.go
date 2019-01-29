@@ -5,13 +5,13 @@
 package TokensApi
 
 import (
-	"TokensApi/entities"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/fiksn/TokensApi/entities"
 	"io/ioutil"
 	"net/http"
 	"net/url"

@@ -5,8 +5,8 @@
 package TokensApi
 
 import (
-	"TokensApi/entities"
 	"errors"
+	"github.com/fiksn/TokensApi/entities"
 	"time"
 
 	"github.com/golang/glog"

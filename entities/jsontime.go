@@ -22,6 +22,7 @@ func (t *timestamp) UnmarshalJSON(data []byte) error {
 
 	// Hack to support null response
 	if str == "null" {
+
 		t.Time = time.Unix(0, 0)
 		return nil
 	}

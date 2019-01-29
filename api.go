@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"time"
 
-	"TokensApi/entities"
+	"github.com/fiksn/TokensApi/entities"
 
 	"github.com/golang/glog"
 	uuid "github.com/satori/go.uuid"
