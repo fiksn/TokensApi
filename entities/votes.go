@@ -6,7 +6,7 @@ package entities
 
 type VotesResp struct {
 	Base
-	VotingEndDate timestamp       `json:"votingEndDate" description:"When voting ends"`
+	VotingEndDate Timestamp       `json:"votingEndDate" description:"When voting ends"`
 	WinnerList    []WinnerElement `json:"winnerList" description:"Winner list"`
 	ActiveList    []ActiveElement `json:"activeList" description:"Active voting list"`
 }
@@ -15,11 +15,11 @@ type PublishStatus int
 
 const (
 	// currency will be added to exchange at unknown date
-	ADD_UNKNOWN = 0
+	AddUnkown = 0
 	// currency will be added to exchange at known date (AddToMarketDate)
-	ADD_KNOWN = 1
+	AddKnown = 1
 	// currency has been added and trading is enabled
-	ADD_DONE = 1
+	AddDone = 1
 )
 
 type CurrencyInfo struct {
@@ -30,8 +30,8 @@ type CurrencyInfo struct {
 type WinnerElement struct {
 	CurrencyInfo
 	TotalVotes      int           `json:"totalVotes" description:"Number of votes"`
-	WinDate         timestamp     `json:"winDate" description:"When the currency has won"`
-	AddToMarketDate timestamp     `json:"addToMarketDate" description:"When the currency will be added to market"`
+	WinDate         Timestamp     `json:"winDate" description:"When the currency has won"`
+	AddToMarketDate Timestamp     `json:"addToMarketDate" description:"When the currency will be added to market"`
 	PublishStatus   PublishStatus `json:"publishStatus" description:"Is adding currency to market date known?"`
 }
 

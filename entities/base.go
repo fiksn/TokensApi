@@ -11,7 +11,7 @@ type Statuser interface {
 
 type Base struct {
 	Status    string    `json:"status" description:"Status"`
-	Timestamp timestamp `json:"timestamp" description:"Timestamp"`
+	Timestamp Timestamp `json:"timestamp" description:"Timestamp"`
 }
 
 func (me Base) GetStatus() string {

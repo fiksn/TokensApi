@@ -20,17 +20,20 @@ import (
 )
 
 const (
-	TokensBaseUrl   = "https://api.tokens.net"
+	// Base URL for API calls
+	TokensBaseUrl = "https://api.tokens.net"
+	// Percentage fee for takers
 	TakerFeePercent = 0.02
+	// Percentage fee for makers
 	MakerFeePercent = 0
 )
 
 type Interval int
 
 const (
-	DAY = iota
-	HOUR
-	MINUTE
+	Day = iota
+	Hour
+	Minute
 )
 
 /**
@@ -102,9 +105,9 @@ func GetTicker(pair string, interval Interval) (entities.TickerResp, error) {
 	)
 
 	switch interval {
-	case HOUR:
+	case Hour:
 		url = fmt.Sprintf("/public/ticker/hour/%s/", pair)
-	case DAY:
+	case Day:
 		url = fmt.Sprintf("/public/ticker/%s/", pair)
 	default:
 		return resp, errors.New("Illegal interval specified")
@@ -131,12 +134,10 @@ func GetTrades(pair string, interval Interval) (entities.TradesResp, error) {
 	)
 
 	switch interval {
-	case HOUR:
+	case Hour:
 		url = fmt.Sprintf("/public/trades/hour/%s/", pair)
-	case DAY:
+	case Day:
 		url = fmt.Sprintf("/public/trades/day/%s/", pair)
-	case MINUTE:
-		url = fmt.Sprintf("/public/trades/minute/%s/", pair)
 	default:
 		return resp, errors.New("Illegal interval specified")
 	}
@@ -212,7 +213,7 @@ func PlaceOrder(
 		return resp, errors.New("Negative price is not allowed")
 	}
 
-	if side != entities.BUY && side != entities.SELL {
+	if side != entities.Buy && side != entities.Sell {
 		return resp, errors.New("Only buy or sell orders are supported")
 	}
 

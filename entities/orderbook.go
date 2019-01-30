@@ -12,6 +12,13 @@ import (
 	"github.com/golang/glog"
 )
 
+type ColumnQuotation int
+
+const (
+	Volume ColumnQuotation = 0
+	Price  ColumnQuotation = 1
+)
+
 // volume, price
 type Quotation [][2]json.Number
 
@@ -31,8 +38,8 @@ type AskOrder Quotation // also ascending
 func (v AskOrder) Len() int      { return len(v) }
 func (v AskOrder) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
 func (a AskOrder) Less(i, j int) bool {
-	first, err := decimal.NewFromString(a[i][1].String())
-	second, err := decimal.NewFromString(a[j][1].String())
+	first, err := decimal.NewFromString(a[i][Price].String())
+	second, err := decimal.NewFromString(a[j][Price].String())
 
 	if err != nil {
 		return false
@@ -49,13 +56,13 @@ func (me *Quotation) GetLiquidity() decimal.Decimal {
 
 	for _, val := range *me {
 
-		onePrice, err := decimal.NewFromString(val[1].String())
+		onePrice, err := decimal.NewFromString(val[Price].String())
 		if err != nil {
 			glog.Warningf("GetLiquidity fatal error %v", err)
 			return sum
 		}
 
-		oneVolume, err := decimal.NewFromString(val[0].String())
+		oneVolume, err := decimal.NewFromString(val[Volume].String())
 		if err != nil {
 			glog.Warningf("GetLiquidity fatal error %v", err)
 			return sum
@@ -80,13 +87,13 @@ func (me *Quotation) VolumeInOtherUnit() *Quotation {
 
 	for i := range created {
 
-		onePrice, err := decimal.NewFromString(created[i][1].String())
+		onePrice, err := decimal.NewFromString(created[i][Price].String())
 		if err != nil {
 			glog.Warningf("VolumeInOtherUnit fatal error %v", err)
 			continue
 		}
 
-		oneVolume, err := decimal.NewFromString(created[i][0].String())
+		oneVolume, err := decimal.NewFromString(created[i][Volume].String())
 		if err != nil {
 			glog.Warningf("VolumeInOtherUnit fatal error %v", err)
 			continue
@@ -116,8 +123,8 @@ func (me *Quotation) GetPriceFor(units decimal.Decimal) (price decimal.Decimal, 
 	}
 
 	for _, one := range *me {
-		onePrice, err := decimal.NewFromString(one[1].String())
-		oneAmount, err := decimal.NewFromString(one[0].String())
+		onePrice, err := decimal.NewFromString(one[Price].String())
+		oneAmount, err := decimal.NewFromString(one[Volume].String())
 		if err != nil {
 			glog.Warningf("GetPriceFor fatal error %v", err)
 			continue

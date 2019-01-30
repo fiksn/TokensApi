@@ -9,15 +9,15 @@ import (
 	"time"
 )
 
-type timestamp struct {
+type Timestamp struct {
 	time.Time
 }
 
-func (t timestamp) MarshalJSON() ([]byte, error) {
+func (t Timestamp) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.FormatInt(time.Time(t.Time).Unix(), 10)), nil
 }
 
-func (t *timestamp) UnmarshalJSON(data []byte) error {
+func (t *Timestamp) UnmarshalJSON(data []byte) error {
 	str := string(data[:])
 
 	// Hack to support null response

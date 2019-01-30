@@ -13,17 +13,17 @@ import (
 type OrderType string
 
 const (
-	BUY  OrderType = "buy"
-	SELL OrderType = "sell"
+	Buy  OrderType = "buy"
+	Sell OrderType = "sell"
 )
 
 type OrderDetails string
 
 const (
-	OPEN     OrderDetails = "Open"
-	FILLED   OrderDetails = "Filled"
-	CANCELED OrderDetails = "Canceled"
-	EXPIRED  OrderDetails = "Expired"
+	Open     OrderDetails = "Open"
+	Filled   OrderDetails = "Filled"
+	Canceled OrderDetails = "Canceled"
+	Expired  OrderDetails = "Expired"
 )
 
 type OrdersResp struct {
@@ -34,7 +34,7 @@ type OrdersResp struct {
 
 type OpenOrder struct {
 	Id              uuid.UUID   `json:"id" description:"ID"`
-	Created         timestamp   `json:"created" description:"Timestamp of order"`
+	Created         Timestamp   `json:"created" description:"Timestamp of order"`
 	Type            OrderType   `json:"type" description:"Either buy or sell"`
 	Price           json.Number `json:"price,string" description:"Price of order."`
 	TakeProfitPrice json.Number `json:"takeeprofit,string" description:"Price to take profit."`
