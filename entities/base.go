@@ -14,10 +14,10 @@ type Base struct {
 	Timestamp timestamp `json:"timestamp" description:"Timestamp"`
 }
 
-func (me *Base) GetStatus() string {
+func (me Base) GetStatus() string {
 	return me.Status
 }
 
-func (me *Base) SetStatus(status string) {
+func (me Base) SetStatus(status string) {
 	me.Status = status
 }
