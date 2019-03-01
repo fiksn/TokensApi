@@ -6,6 +6,7 @@ package TokensApi
 import (
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"testing"
 	"time"
@@ -40,7 +41,10 @@ func containsID(orders []entities.OpenOrder, id uuid.UUID) bool {
 
 func TestFiatToCryptoOrder(t *testing.T) {
 	// WARNING: this might spend 5 USDT (but at least you'll get a very good price ;) )
-	const num = 5.0
+	const (
+		num = 5.0
+		eps = 0.000001
+	)
 
 	if !*e2e {
 		fmt.Println("End to end testing not perfomed you need to pass -e2e to go test")
@@ -106,7 +110,7 @@ func TestFiatToCryptoOrder(t *testing.T) {
 		t.Error("PlaceOrderTyped failed", err)
 	}
 
-	fmt.Printf("Placed order %v volume = %v price = %v\n", placement.OrderId, volume, myPrice)
+	fmt.Printf("Placed order %v volume = %v price = %v spent = %v %v\n", placement.OrderId, volume, myPrice, myPrice*volume, fiat)
 
 	balance, err = GetBalance(fiat)
 	if err != nil {
@@ -152,7 +156,7 @@ func TestFiatToCryptoOrder(t *testing.T) {
 		t.Error("Conversion failed", err)
 	}
 
-	if theirAmount != volume {
+	if math.Abs(theirAmount-volume) > eps {
 		t.Error("Order details has wrong amount", theirAmount, volume)
 	}
 
@@ -160,7 +164,7 @@ func TestFiatToCryptoOrder(t *testing.T) {
 	if err != nil {
 		t.Error("Conversion failed", err)
 	}
-	if theirAmount != volume {
+	if math.Abs(theirAmount-volume) > eps {
 		t.Error("Order details has wrong remaining amount", theirAmount, volume)
 	}
 
