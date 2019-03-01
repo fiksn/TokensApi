@@ -6,8 +6,10 @@ package TokensApi
 
 import (
 	"errors"
-	"github.com/fiksn/TokensApi/entities"
+	"strings"
 	"time"
+
+	"github.com/fiksn/TokensApi/entities"
 
 	"github.com/golang/glog"
 )
@@ -114,24 +116,25 @@ func PlaceOrderTyped(
 }
 
 /**
-* Get balances. Warning: this method is quite heavy in terms of how many calls it does to the server.
+* Get balances.
  */
 func GetBalances(hideZero bool) map[string]*entities.BalanceResp {
+	all, err := GetAllBalances()
 	resp := make(map[string]*entities.BalanceResp)
-	currencies, err := GetAllCurrencies()
 	if err != nil {
 		return nil
 	}
 
-	for _, currency := range currencies {
-		result, err := GetBalance(currency)
-		if err == nil {
-			total, err := result.Total.Float64()
-			if err != nil {
-				continue
-			}
-			if (hideZero && total > 0) || !hideZero {
-				resp[currency] = &result
+	for currency, balance := range all.Balances {
+		total, err := balance.Total.Float64()
+		if err != nil {
+			continue
+		}
+		if (hideZero && total > 0) || !hideZero {
+			resp[strings.ToLower(currency)] = &entities.BalanceResp{
+				Base:     all.Base,
+				Currency: strings.ToLower(currency),
+				Balance:  *balance,
 			}
 		}
 	}

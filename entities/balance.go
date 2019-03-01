@@ -11,9 +11,20 @@ import (
 
 type BalanceResp struct {
 	Base
+	Currency string `json:"currency" description:"Currency"`
+	Balance
+}
+
+type Balance struct {
 	Total     json.Number `json:"total,string" description:"Total amount."`
-	Currency  string      `json:"currency" description:"Currency"`
 	Available json.Number `json:"available,string" description:"Available amount."`
+}
+
+type Balances map[string]*Balance
+
+type AllBalanceResp struct {
+	Base
+	Balances `json:"balances" description:"Balances"`
 }
 
 func (me *BalanceResp) String() string {

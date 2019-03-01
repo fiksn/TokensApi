@@ -10,14 +10,14 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/fiksn/TokensApi/entities"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/fiksn/TokensApi/entities"
 
 	"github.com/golang/glog"
 )
@@ -94,8 +94,6 @@ func requestAuthPost(url string, data url.Values) []byte {
 		glog.Warningf("requestAuthPost error %v", err)
 		return nil
 	}
-
-	fmt.Println(data)
 
 	req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")

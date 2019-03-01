@@ -96,6 +96,24 @@ func GetBalance(currency string) (entities.BalanceResp, error) {
 }
 
 /**
+* Get all balances.
+ */
+func GetAllBalances() (entities.AllBalanceResp, error) {
+	var resp entities.AllBalanceResp
+
+	jsonBlob := requestAuth(TokensBaseUrl + "/private/balance/all/")
+	if jsonBlob == nil {
+		fmt.Println("No response")
+		return resp, errors.New("No response")
+	}
+
+	glog.V(2).Infof("GetAllBalances resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
+
+/**
 * Get ticker for last day or hour.
  */
 func GetTicker(pair string, interval Interval) (entities.TickerResp, error) {
@@ -242,10 +260,12 @@ func PlaceOrder(
 }
 
 /**
- * Get order details
+ * Get order details.
  */
 func GetOrderDetails(id uuid.UUID) (entities.OrderDetailsResp, error) {
 	var resp entities.OrderDetailsResp
+
+	fmt.Println(TokensBaseUrl + fmt.Sprintf("/private/orders/get/%s/", id))
 
 	jsonBlob := requestAuth(TokensBaseUrl + fmt.Sprintf("/private/orders/get/%s/", id))
 	if jsonBlob == nil {

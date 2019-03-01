@@ -20,10 +20,10 @@ const (
 type OrderDetails string
 
 const (
-	Open     OrderDetails = "Open"
-	Filled   OrderDetails = "Filled"
-	Canceled OrderDetails = "Canceled"
-	Expired  OrderDetails = "Expired"
+	Open     OrderDetails = "open"
+	Filled   OrderDetails = "filled"
+	Canceled OrderDetails = "canceled" // sic
+	Expired  OrderDetails = "expired"
 )
 
 type OrdersResp struct {
@@ -49,7 +49,7 @@ type OrderDetailsResp struct {
 	OpenOrder
 	Trades []ExtendedTrade `json:"trades" description:"Trades."`
 
-	OrderStatus OrderDetails `json:"orderStatus" description:"Either buy or sell"`
+	OrderStatus OrderDetails `json:"orderStatus" description:"Details about the order"`
 }
 
 type ExtendedTrade struct {

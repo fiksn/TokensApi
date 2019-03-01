@@ -4,6 +4,7 @@
 package TokensApi
 
 import (
+	"flag"
 	"math"
 	"testing"
 	"time"
@@ -13,7 +14,15 @@ import (
 
 const pair string = "btcusdt"
 
+func init() {
+	flag.Parse()
+}
+
 func TestThatNoPublicFunctionErrors(t *testing.T) {
+	if *e2e {
+		return
+	}
+
 	var statuser entities.Statuser
 
 	_, err := GetTradingPairs()
@@ -66,6 +75,10 @@ func TestThatNoPublicFunctionErrors(t *testing.T) {
 
 func TestThatOrderBookIsSane(t *testing.T) {
 
+	if *e2e {
+		return
+	}
+
 	resp, err := GetOrderBook(pair)
 
 	if err != nil {
@@ -100,6 +113,10 @@ func TestThatOrderBookIsSane(t *testing.T) {
 
 func TestThatTradingPairsAreSane(t *testing.T) {
 
+	if *e2e {
+		return
+	}
+
 	resp, err := GetTradingPairs()
 
 	val, err := resp[pair].MinAmount.Float64()
@@ -112,6 +129,10 @@ func TestThatTradingPairsAreSane(t *testing.T) {
 }
 
 func TestThatVotingIsSane(t *testing.T) {
+	if *e2e {
+		return
+	}
+
 	resp, err := GetVotes()
 
 	if err != nil {
