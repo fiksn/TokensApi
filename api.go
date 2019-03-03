@@ -43,7 +43,7 @@ func GetTradingPairs() (entities.TradingPairResp, error) {
 	var resp entities.TradingPairResp
 
 	jsonBlob := request(TokensBaseUrl + "/public/trading-pairs/get/all/")
-	glog.V(2).Infof("GetTradingPairs resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetTradingPairs resp %v", string(jsonBlob))
 
 	err := json.Unmarshal(jsonBlob, &resp)
 	if err != nil {
@@ -65,7 +65,7 @@ func GetOrderBook(pair string) (entities.OrderBookResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetOrderBook resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetOrderBook resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	if err != nil {
@@ -89,7 +89,7 @@ func GetBalance(currency string) (entities.BalanceResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetBalance resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetBalance resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -106,7 +106,7 @@ func GetAllBalances() (entities.AllBalanceResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetAllBalances resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetAllBalances resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -135,7 +135,7 @@ func GetTicker(pair string, interval Interval) (entities.TickerResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetTicker resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetTicker resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -164,7 +164,7 @@ func GetTrades(pair string, interval Interval) (entities.TradesResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetTrades resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetTrades resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -181,7 +181,7 @@ func GetVotes() (entities.VotesResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetVotes resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetVotes resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -198,7 +198,7 @@ func CancelOrder(id uuid.UUID) (entities.Base, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("CancelOrder resp %v", string(jsonBlob))
+	glog.V(5).Infof("CancelOrder resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -252,7 +252,7 @@ func PlaceOrder(
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("PlaceOrder resp %v", string(jsonBlob))
+	glog.V(5).Infof("PlaceOrder resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -271,7 +271,7 @@ func GetOrderDetails(id uuid.UUID) (entities.OrderDetailsResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetOrderDetails resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetOrderDetails resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -288,7 +288,7 @@ func GetAllOrders() (entities.OrdersResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetAllOrders resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetAllOrders resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
@@ -305,7 +305,7 @@ func GetAllOrdersFor(pair string) (entities.OrdersResp, error) {
 		return resp, errors.New("No response")
 	}
 
-	glog.V(2).Infof("GetAllOrdersFor resp %v", string(jsonBlob))
+	glog.V(5).Infof("GetAllOrdersFor resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err

@@ -30,7 +30,7 @@ func CancelAllOrders() error {
 			glog.Warningf("Order %v has a strange remaining amount %v", order.Id, order.RemainingAmount)
 		}
 
-		glog.V(2).Infof("Canceling order %v", order.Id)
+		glog.V(6).Infof("Canceling order %v", order.Id)
 		CancelOrder(order.Id)
 	}
 
@@ -89,7 +89,7 @@ func PlaceOrderTyped(
 
 	minAmount, err := pair.MinAmount.Float64()
 	if err != nil || float64(amount) < minAmount {
-		return resp, errors.New("Amount is too low")
+		return resp, errors.New("150 Amount is too low")
 	}
 
 	if takeProfitPrice != nil {

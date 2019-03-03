@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -54,7 +55,7 @@ func parseJsonCfg(configPath string) *CredentialsConfig {
 }
 
 func request(url string) []byte {
-	glog.V(3).Infof("request url: %v\n", url)
+	glog.V(6).Infof("request url: %v\n", url)
 
 	client := http.Client{
 		Timeout: Timeout,
@@ -104,7 +105,7 @@ func requestAuthPost(url string, data url.Values) []byte {
 
 	client := &http.Client{Timeout: Timeout}
 
-	glog.V(3).Infof("requestAuthPost url: %v data %v\n", url, data)
+	glog.V(6).Infof("requestAuthPost url: %v data %v\n", url, data)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -145,7 +146,7 @@ func requestAuth(url string) []byte {
 
 	client := &http.Client{Timeout: Timeout}
 
-	glog.V(3).Infof("requestAuth url: %v\n", url)
+	glog.V(6).Infof("requestAuth url: %v\n", url)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -177,7 +178,7 @@ func deserialize(jsonBlob []byte, resp entities.Statuser) (err error) {
 	if resp.GetStatus() != "ok" {
 		err = json.Unmarshal(jsonBlob, &errorEntity)
 		if err == nil {
-			return errors.New(errorEntity.Reason)
+			return fmt.Errorf("%v %v", errorEntity.ErrorCode, errorEntity.Reason)
 		}
 
 		return errors.New(resp.GetStatus())
