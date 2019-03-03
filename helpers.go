@@ -33,8 +33,20 @@ const (
 )
 
 var (
-	Credentials *CredentialsConfig
+	Credentials  *CredentialsConfig
+	NullHookFunc = func(code int, reason string) {}
+	HookFunc     = NullHookFunc
 )
+
+type ErrorHook func(int, string)
+
+func InstallErrorHook(f ErrorHook) {
+	HookFunc = f
+}
+
+func UninstallErrorHook() {
+	HookFunc = NullHookFunc
+}
 
 func Init(configPath string) {
 	Credentials = parseJsonCfg(configPath)
@@ -178,9 +190,11 @@ func deserialize(jsonBlob []byte, resp entities.Statuser) (err error) {
 	if resp.GetStatus() != "ok" {
 		err = json.Unmarshal(jsonBlob, &errorEntity)
 		if err == nil {
+			HookFunc(errorEntity.ErrorCode, errorEntity.Reason)
 			return fmt.Errorf("%v %v", errorEntity.ErrorCode, errorEntity.Reason)
 		}
 
+		HookFunc(0, resp.GetStatus())
 		return errors.New(resp.GetStatus())
 	}
 
