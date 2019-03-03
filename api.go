@@ -23,7 +23,7 @@ const (
 	// Base URL for API calls
 	TokensBaseUrl = "https://api.tokens.net"
 	// Percentage fee for takers
-	TakerFeePercent = 0.02
+	TakerFeePercent = 0.2
 	// Percentage fee for makers
 	MakerFeePercent = 0
 )
@@ -103,7 +103,6 @@ func GetAllBalances() (entities.AllBalanceResp, error) {
 
 	jsonBlob := requestAuth(TokensBaseUrl + "/private/balance/all/")
 	if jsonBlob == nil {
-		fmt.Println("No response")
 		return resp, errors.New("No response")
 	}
 
