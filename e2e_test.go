@@ -39,6 +39,34 @@ func containsID(orders []entities.OpenOrder, id uuid.UUID) bool {
 	return false
 }
 
+func DisabledTestFilledOrder(t *testing.T) {
+	if !*e2e {
+		fmt.Println("End to end testing not perfomed you need to pass -e2e to go test")
+		return
+	}
+
+	if _, err := os.Stat("./credentials"); os.IsNotExist(err) {
+		fmt.Println("Your credentials are required for this test - place a file credentials into current directory")
+		return
+	}
+
+	Init("./credentials")
+
+	id, err := uuid.FromString("28d6c834-b825-42f8-8117-9cb99439608d")
+	if err != nil {
+		t.Error("UUID conversion error", err)
+		return
+	}
+
+	result, err := GetOrderDetails(id)
+	if err != nil {
+		t.Error("Could GetOrderDetails", err)
+		return
+	}
+
+	fmt.Printf("Details %v\n", result)
+}
+
 func TestFiatToCryptoOrder(t *testing.T) {
 	// WARNING: this might spend 5 USDT (but at least you'll get a very good price ;) )
 	const (
@@ -111,6 +139,9 @@ func TestFiatToCryptoOrder(t *testing.T) {
 	}
 
 	fmt.Printf("Placed order %v volume = %v price = %v spent = %v %v\n", placement.OrderId, volume, myPrice, myPrice*volume, fiat)
+
+	// After every action it might take a bit for it to get reflected
+	time.Sleep(2 * time.Second)
 
 	balance, err = GetBalance(fiat)
 	if err != nil {
@@ -190,6 +221,7 @@ func TestFiatToCryptoOrder(t *testing.T) {
 		t.Error("Order was not found among pair orders")
 	}
 
+	// You might want to check the webinterface here
 	time.Sleep(10 * time.Second)
 
 	fmt.Println("Cancelling order")
@@ -197,6 +229,9 @@ func TestFiatToCryptoOrder(t *testing.T) {
 	if err != nil {
 		t.Error("CancelOrder failed", err)
 	}
+
+	// After every action it might take a bit for it to get reflected
+	time.Sleep(2 * time.Second)
 
 	balance, err = GetBalance(fiat)
 	if err != nil {

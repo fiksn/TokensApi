@@ -1,8 +1,7 @@
 # TokensApi
-Tokens.NET API still in beta
+A library in Go(lang) to use the API from the cryptocurrency exchange [Tokens](https://www.tokens.net)
 
-Private repo, use ```git config --global url."git@github.com:".insteadOf "https://github.com/"``` to be
-able to use go get.
+Warning this library is provided as-is, authors are not liable for any kind of damages (like financial loss but not limited to)
 
 Example
 

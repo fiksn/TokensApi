@@ -264,8 +264,6 @@ func PlaceOrder(
 func GetOrderDetails(id uuid.UUID) (entities.OrderDetailsResp, error) {
 	var resp entities.OrderDetailsResp
 
-	fmt.Println(TokensBaseUrl + fmt.Sprintf("/private/orders/get/%s/", id))
-
 	jsonBlob := requestAuth(TokensBaseUrl + fmt.Sprintf("/private/orders/get/%s/", id))
 	if jsonBlob == nil {
 		return resp, errors.New("No response")
