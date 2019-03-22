@@ -17,6 +17,6 @@ type TradingPair struct {
 
 type TradingPairResp map[string]TradingPair
 
-func (me *TradingPair) String() string {
+func (me TradingPair) String() string {
 	return "Trading pair " + me.Title
 }

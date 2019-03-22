@@ -27,6 +27,6 @@ type AllBalanceResp struct {
 	Balances `json:"balances" description:"Balances"`
 }
 
-func (me *BalanceResp) String() string {
+func (me BalanceResp) String() string {
 	return fmt.Sprintf("Balance %v %v/%v", me.Currency, me.Available, me.Total)
 }

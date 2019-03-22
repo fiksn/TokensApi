@@ -54,7 +54,7 @@ type OrderDetailsResp struct {
 
 type ExtendedTrade struct {
 	Trade
-	Value json.Number `json:"value,string" description:"Value is price * amount"`
+	Value json.Number `json:"value,string" description:"Value is price * amount, however note that currenly it is in limited number of decimals (same as price?)"`
 }
 
 type PlaceOrderResp struct {
