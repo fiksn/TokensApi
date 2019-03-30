@@ -48,22 +48,24 @@ func UninstallErrorHook() {
 	HookFunc = NullHookFunc
 }
 
-func Init(configPath string) {
-	Credentials = parseJsonCfg(configPath)
+func Init(configPath string) error {
+	var err error
+	Credentials, err = parseJsonCfg(configPath)
+	return err
 }
 
-func parseJsonCfg(configPath string) *CredentialsConfig {
+func parseJsonCfg(configPath string) (*CredentialsConfig, error) {
 	jsonBlob, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		glog.Fatalf("Could not parse config: %v", err)
+		return nil, errors.New(fmt.Sprintf("Could not parse config: %v", err))
 	}
 	var cfg CredentialsConfig
 	err = json.Unmarshal(jsonBlob, &cfg)
 	if err != nil {
-		glog.Fatalf("Unable to unmarshal json blob: %v", string(jsonBlob))
+		return nil, errors.New(fmt.Sprintf("Unable to unmarshal json blob: %v", string(jsonBlob)))
 	}
 
-	return &cfg
+	return &cfg, nil
 }
 
 func request(url string) []byte {
