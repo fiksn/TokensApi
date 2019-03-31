@@ -39,18 +39,30 @@ func containsID(orders []entities.OpenOrder, id uuid.UUID) bool {
 	return false
 }
 
+func initCredentials() bool {
+	if _, err := os.Stat("./credentials"); os.IsNotExist(err) {
+		fmt.Println("Your credentials are required for this test - place a file credentials into current directory")
+		return false
+	}
+
+	err := Init("./credentials")
+	if err != nil {
+		fmt.Println("Your credentials are required for this test - place a file credentials into current directory")
+		return false
+	}
+
+	return true
+}
+
 func DisabledTestFilledOrder(t *testing.T) {
 	if !*e2e {
 		fmt.Println("End to end testing not perfomed you need to pass -e2e to go test")
 		return
 	}
 
-	if _, err := os.Stat("./credentials"); os.IsNotExist(err) {
-		fmt.Println("Your credentials are required for this test - place a file credentials into current directory")
+	if !initCredentials() {
 		return
 	}
-
-	Init("./credentials")
 
 	id, err := uuid.FromString("28d6c834-b825-42f8-8117-9cb99439608d")
 	if err != nil {
@@ -79,12 +91,9 @@ func TestFiatToCryptoOrder(t *testing.T) {
 		return
 	}
 
-	if _, err := os.Stat("./credentials"); os.IsNotExist(err) {
-		fmt.Println("Your credentials are required for this test - place a file credentials into current directory")
+	if !initCredentials() {
 		return
 	}
-
-	Init("./credentials")
 
 	orders, err := GetOrderBook(crypto + fiat)
 	if err != nil {

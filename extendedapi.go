@@ -141,3 +141,33 @@ func GetBalances(hideZero bool) map[string]*entities.BalanceResp {
 
 	return resp
 }
+
+/**
+ * Get transactions. WARNING might take a while.
+ */
+func GetAllTransactions() (entities.TransactionResp, error) {
+
+	// starts with 1 not 0
+	page := 1
+	resp := entities.TransactionResp{}
+	resp.TotalPages = page
+	resp.Transactions = make([]entities.Transaction, 0)
+
+	for page < resp.TotalPages {
+		temp, err := GetTransactions(page)
+
+		resp.CurrentPage = temp.CurrentPage
+		resp.TotalPages = temp.TotalPages
+		resp.Status = temp.Status
+		resp.Timestamp = temp.Timestamp
+
+		resp.Transactions = append(resp.Transactions, temp.Transactions...)
+
+		if err != nil {
+			return resp, err
+		}
+		page++
+	}
+
+	return resp, nil
+}

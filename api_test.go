@@ -5,6 +5,7 @@ package TokensApi
 
 import (
 	"flag"
+	"fmt"
 	"math"
 	"testing"
 	"time"
@@ -144,4 +145,46 @@ func TestThatVotingIsSane(t *testing.T) {
 	if resp.VotingEndDate.Before(now) {
 		t.Error("Voting should end in the future")
 	}
+}
+
+func TestGetTransactions(t *testing.T) {
+
+	if !initCredentials() {
+		return
+	}
+
+	resp, err := GetTransactions(1)
+	if err != nil {
+		t.Error("GetTransactions failed", err)
+	}
+
+	if resp.CurrentPage != 1 {
+		t.Error("First page should be returned instead of ", resp.CurrentPage)
+	}
+
+	if resp.TotalPages < resp.CurrentPage {
+		t.Error("Current page should be within total pages range ", resp.CurrentPage, resp.TotalPages)
+	}
+
+	// fun fact page zero or 4000 should return last page
+	resp, err = GetTransactions(0)
+	if err != nil {
+		t.Error("GetTransactions failed", err)
+	}
+
+	if resp.TotalPages != resp.CurrentPage {
+		t.Error("Zero page did not return last page")
+	}
+
+	resp, err = GetTransactions(resp.TotalPages + 1)
+	if err != nil {
+		t.Error("GetTransactions failed", err)
+	}
+
+	if resp.TotalPages != resp.CurrentPage {
+		t.Error("Last page plus one did not return last page")
+	}
+
+	// TODO: remove
+	fmt.Println(resp)
 }

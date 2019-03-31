@@ -308,3 +308,20 @@ func GetAllOrdersFor(pair string) (entities.OrdersResp, error) {
 	err := deserialize(jsonBlob, &resp)
 	return resp, err
 }
+
+/**
+ * Get transactions. Page parameter starts from 1 and goes to max (which you get from TransactionResp.TotalPages)
+ */
+func GetTransactions(page int) (entities.TransactionResp, error) {
+	var resp entities.TransactionResp
+
+	jsonBlob := requestAuth(TokensBaseUrl + fmt.Sprintf("/private/transactions/%d/", page))
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(5).Infof("GetTransactions resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
