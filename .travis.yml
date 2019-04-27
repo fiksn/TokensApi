@@ -1,0 +1,13 @@
+language: go
+
+go:
+  - 1.12.x
+
+git:
+  depth: 1
+
+script:
+  - go get ./...
+  - test -z "$(gofmt -l . | tee /dev/stderr)"
+  - go build ./...
+  - go test -v ./...

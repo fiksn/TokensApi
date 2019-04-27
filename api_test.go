@@ -5,7 +5,6 @@ package TokensApi
 
 import (
 	"flag"
-	"fmt"
 	"math"
 	"testing"
 	"time"
@@ -184,7 +183,4 @@ func TestGetTransactions(t *testing.T) {
 	if resp.TotalPages != resp.CurrentPage {
 		t.Error("Last page plus one did not return last page")
 	}
-
-	// TODO: remove
-	fmt.Println(resp)
 }
