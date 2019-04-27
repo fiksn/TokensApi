@@ -1,6 +1,8 @@
 # TokensApi
 
 [![Build Status](https://travis-ci.org/fiksn/TokensApi.svg?branch=master)](https://travis-ci.org/fiksn/TokensApi)
+[![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://forthebadge.com)
 
 An (unoffical) library in Go(lang) to use the API of the cryptocurrency exchange [Tokens](https://www.tokens.net)
 
