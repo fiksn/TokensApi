@@ -1,4 +1,7 @@
 # TokensApi
+
+https://travis-ci.org/fiksn/TokensApi.svg?branch=master
+
 An (unoffical) library in Go(lang) to use the API of the cryptocurrency exchange [Tokens](https://www.tokens.net)
 
 Warning: this library is provided as-is, contributors are not liable for any kind of damages including, but not limited to, financial loss!
