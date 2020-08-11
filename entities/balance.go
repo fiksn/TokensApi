@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Gregor Pogačnik
+ * Copyright (C) 2019-2020 Gregor Pogačnik
  */
 
 package entities

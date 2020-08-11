@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Gregor Pogačnik
+ * Copyright (C) 2019-2020 Gregor Pogačnik
  */
 package TokensApi
 
@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -24,9 +25,10 @@ var (
 	e2e = flag.Bool("e2e", false, "Perform end to end testing")
 )
 
-func init() {
-	flag.Parse()
-}
+var _ = func() bool {
+	testing.Init()
+	return true
+}()
 
 func containsID(orders []entities.OpenOrder, id uuid.UUID) bool {
 
@@ -271,5 +273,33 @@ func TestFiatToCryptoOrder(t *testing.T) {
 	if containsID(pairOrders.OpenOrders, placement.OrderId) {
 		t.Error("Order was found among pair orders after cancellation")
 	}
+}
 
+func TestDepositAddresses(t *testing.T) {
+	if !*e2e {
+		fmt.Println("End to end testing not perfomed you need to pass -e2e to go test")
+		return
+	}
+
+	if !initCredentials() {
+		return
+	}
+
+	currencies, err := GetCurrencies()
+
+	if err != nil {
+		t.Error("GetCurrencies failed", err)
+	}
+
+	for name, currency := range currencies.Currencies {
+		if !currency.CanWithdraw {
+			continue
+		}
+		address, err := GetDepositAddress(strings.ToLower(name))
+		if err != nil {
+			t.Errorf("GetAllCurrencies %s failed %v", name, err)
+		}
+
+		t.Logf("%s %s\n", name, address)
+	}
 }

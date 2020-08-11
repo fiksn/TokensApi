@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Gregor Pogačnik
+ * Copyright (C) 2019-2020 Gregor Pogačnik
  */
 
 package TokensApi
@@ -321,6 +321,40 @@ func GetTransactions(page int) (entities.TransactionResp, error) {
 	}
 
 	glog.V(5).Infof("GetTransactions resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
+
+/**
+ * Get deposit address for given currency (note you need API key of Main account)
+ */
+func GetDepositAddress(currency string) (entities.DepositAddrResp, error) {
+	var resp entities.DepositAddrResp
+
+	jsonBlob := requestAuth(TokensBaseUrl + fmt.Sprintf("/private/deposit/%s/", currency))
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(5).Infof("GetDepositAddress resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
+
+/**
+ * Get currencies (and some basic info).
+ */
+func GetCurrencies() (entities.CurrencyResp, error) {
+	var resp entities.CurrencyResp
+
+	jsonBlob := request(TokensBaseUrl + "/public/currency/all/")
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(5).Infof("GetVotes resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err

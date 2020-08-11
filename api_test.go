@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Gregor Pogačnik
+ * Copyright (C) 2019-2020 Gregor Pogačnik
  */
 package TokensApi
 
@@ -71,6 +71,15 @@ func TestThatNoPublicFunctionErrors(t *testing.T) {
 	if statuser.GetStatus() != "ok" {
 		t.Error("GetVotes failed status", statuser.GetStatus())
 	}
+
+	statuser, err = GetCurrencies()
+	if err != nil {
+		t.Error("GetCurrencies failed", err)
+	}
+	if statuser.GetStatus() != "ok" {
+		t.Error("GetCurrencies failed status", statuser.GetStatus())
+	}
+
 }
 
 func TestThatOrderBookIsSane(t *testing.T) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Gregor Pogačnik
+ * Copyright (C) 2019-2020 Gregor Pogačnik
  */
 
 package TokensApi
@@ -39,6 +39,7 @@ func CancelAllOrders() error {
 
 /**
 * Get all supported currency codes.
+* See GetCurrencies()
  */
 func GetAllCurrencies() ([]string, error) {
 	resp, err := GetTradingPairs()
