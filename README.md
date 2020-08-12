@@ -46,3 +46,7 @@ Unofficial information: public requests are not intentionally rate-limited (they
 ## Tipping
 
 If you like it you can send some ether or abandoned kitties to 0xFF0da2B849aAbd5F37265190fFe1a64D4Febb52D ;)
+
+I am also a fan of Bitcoin Lightning:
+
+[![tippin.me](https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@fiksn/F0918E)](https://tippin.me/@fiksn)
