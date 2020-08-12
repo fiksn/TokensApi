@@ -81,6 +81,43 @@ func TestThatNoPublicFunctionErrors(t *testing.T) {
 		t.Error("GetCurrencies failed status", statuser.GetStatus())
 	}
 
+	statuser, err = GetCandles(pair, Min30, time.Now().Add(-48*time.Hour), time.Now().Add(-24*time.Hour))
+	if err != nil {
+		t.Error("GetCandles failed", err)
+	}
+	if statuser.GetStatus() != "ok" {
+		t.Error("GetCandles failed status", statuser.GetStatus())
+	}
+}
+
+func TestThatCandlesAreSane(t *testing.T) {
+	from := time.Now().Add(-48 * time.Hour)
+	to := time.Now().Add(-24 * time.Hour)
+	candles, err := GetCandles(pair, Min10, from, to)
+
+	if err != nil {
+		t.Error("GetCandles failed", err)
+	}
+
+	for _, one := range candles.Data {
+		if one.Time.Before(from) || one.Time.After(to) {
+			t.Errorf("Silly timestamp %v", one.Time)
+		}
+
+		high, err := one.High.Float64()
+		if err != nil {
+			t.Error("High value strange", err)
+		}
+
+		low, err := one.Low.Float64()
+		if err != nil {
+			t.Error("Low value strange", err)
+		}
+
+		if high < low {
+			t.Errorf("High (%v) should be higher than low (%v)", high, low)
+		}
+	}
 }
 
 func TestThatOrderBookIsSane(t *testing.T) {

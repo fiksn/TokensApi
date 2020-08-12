@@ -28,13 +28,35 @@ const (
 	MakerFeePercent = 0
 )
 
-type Interval int
+type TickerInterval int
 
 const (
 	Day = iota
 	Hour
-	Minute
 )
+
+type CandleInterval int
+
+const (
+	Min1 = iota
+	Min5
+	Min10
+	Min30
+	Day1
+)
+
+type CandleIntervalSpec struct {
+	Interval string
+	Number   int
+}
+
+var candleIntervalMap = map[CandleInterval]CandleIntervalSpec{
+	Min1:  {Interval: "minute", Number: 1},
+	Min5:  {Interval: "minute", Number: 5},
+	Min10: {Interval: "minute", Number: 10},
+	Min30: {Interval: "minute", Number: 30},
+	Day1:  {Interval: "day", Number: 1},
+}
 
 /**
 * List all existing pairs.
@@ -115,7 +137,7 @@ func GetAllBalances() (entities.AllBalanceResp, error) {
 /**
 * Get ticker for last day or hour.
  */
-func GetTicker(pair string, interval Interval) (entities.TickerResp, error) {
+func GetTicker(pair string, interval TickerInterval) (entities.TickerResp, error) {
 	var (
 		resp entities.TickerResp
 		url  string
@@ -144,7 +166,7 @@ func GetTicker(pair string, interval Interval) (entities.TickerResp, error) {
 /**
 * List trades, which occured in last minute, hour or day.
  */
-func GetTrades(pair string, interval Interval) (entities.TradesResp, error) {
+func GetTrades(pair string, interval TickerInterval) (entities.TradesResp, error) {
 	var (
 		resp entities.TradesResp
 		url  string
@@ -355,6 +377,31 @@ func GetCurrencies() (entities.CurrencyResp, error) {
 	}
 
 	glog.V(5).Infof("GetVotes resp %v", string(jsonBlob))
+
+	err := deserialize(jsonBlob, &resp)
+	return resp, err
+}
+
+/**
+ * Get candles.
+ */
+func GetCandles(pair string, interval CandleInterval, from, to time.Time) (entities.CandlesResp, error) {
+	var resp entities.CandlesResp
+
+	candleInterval, ok := candleIntervalMap[interval]
+	if !ok {
+		return resp, errors.New("Invalid interval")
+	}
+
+	// https://api.tokens.net/public/price-chart/{tradingPair}/{interval}/{period}/{timeFrom}/{timeTo}/
+	jsonBlob := request(TokensBaseUrl + fmt.Sprintf("/public/price-chart/%s/%s/%d/%s/%s/", pair, candleInterval.Interval, candleInterval.Number,
+		strconv.FormatInt(from.Unix(), 10), strconv.FormatInt(to.Unix(), 10)))
+
+	if jsonBlob == nil {
+		return resp, errors.New("No response")
+	}
+
+	glog.V(5).Infof("GetCandles resp %v", string(jsonBlob))
 
 	err := deserialize(jsonBlob, &resp)
 	return resp, err

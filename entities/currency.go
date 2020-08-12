@@ -10,8 +10,8 @@ type Currency struct {
 	Name          string      `json:"name" description:"Name of the currency."`
 	NamePlural    string      `json:"namePlural" description:"Plural name of the currency."`
 	Decimals      int         `json:"decimals,int" description:"Number of decimals."`
-	WithdrawalFee json.Number `json:"withdrawalFee" description:"Fee in this currency to whitdraw."`
-	MinimalOrder  json.Number `json:"minimalOrder" description:"Minimal order."`
+	WithdrawalFee json.Number `json:"withdrawalFee,string" description:"Fee in this currency to whitdraw."`
+	MinimalOrder  json.Number `json:"minimalOrder,string" description:"Minimal order."`
 	CanWithdraw   bool        `json:"canWithDraw" description:"Can the currency currently be withdrawn?"`
 	UsdtValue     json.Number `json:"usdtValue,string" description:"Value of this currency in USDT."`
 	BtcValue      json.Number `json:"btcValue,string" description:"Value of this currency in BTC."`

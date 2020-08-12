@@ -6,6 +6,7 @@ package entities
 
 import (
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -22,10 +23,17 @@ func (t *Timestamp) UnmarshalJSON(data []byte) error {
 
 	// Hack to support null response
 	if str == "null" {
-
+		//fmt.Printf("Found strange date %v", str)
 		t.Time = time.Unix(0, 0)
 		return nil
 	}
+
+	// Hack to handle decimal point
+	split := strings.Split(str, ".")
+	if len(split) > 1 {
+		//fmt.Printf("Found strange date %v", str)
+	}
+	str = split[0]
 
 	i, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
