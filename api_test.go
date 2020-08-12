@@ -6,6 +6,7 @@ package TokensApi
 import (
 	"flag"
 	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -191,5 +192,50 @@ func TestGetTransactions(t *testing.T) {
 
 	if resp.TotalPages != resp.CurrentPage {
 		t.Error("Last page plus one did not return last page")
+	}
+}
+
+func TestThatCurrenciesAndTradingPairsAreInSync(t *testing.T) {
+	if *e2e {
+		return
+	}
+
+	currencies, err := GetCurrencies()
+	if err != nil {
+		t.Error("GetCurrencies failed", err)
+	}
+
+	currencySet := make(map[string]bool)
+
+	for name, _ := range currencies.Currencies {
+		currencySet[strings.ToLower(name)] = true
+	}
+
+	fromPairs, err := GetAllCurrencies()
+	if err != nil {
+		t.Error("GetAllCurrencies failed", err)
+	}
+
+	fromPairSet := make(map[string]bool)
+	for _, name := range fromPairs {
+		fromPairSet[strings.ToLower(name)] = true
+	}
+
+	/* Check */
+
+	if len(currencySet) != len(fromPairSet) {
+		t.Errorf("Number of currencies %d is not the same as number of currencies from trading pairs %d\n", len(currencySet), len(fromPairSet))
+	}
+
+	for name, _ := range currencySet {
+		if _, ok := fromPairSet[name]; !ok {
+			t.Errorf("Currency %s in GetCurrencies() but not found in trading pairs", name)
+		}
+	}
+
+	for name, _ := range fromPairSet {
+		if _, ok := currencySet[name]; !ok {
+			t.Errorf("Currency %s from trading pair - GetAllCurrencies() but not found in GetCurrencies()", name)
+		}
 	}
 }
