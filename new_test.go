@@ -1,4 +1,4 @@
-// +build go1.13+
+// +build go1.13
 
 /*
  * Copyright (C) 2019-2020 Gregor Pogačnik
