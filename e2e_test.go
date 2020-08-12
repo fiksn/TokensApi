@@ -25,11 +25,6 @@ var (
 	e2e = flag.Bool("e2e", false, "Perform end to end testing")
 )
 
-var _ = func() bool {
-	testing.Init()
-	return true
-}()
-
 func containsID(orders []entities.OpenOrder, id uuid.UUID) bool {
 
 	for _, order := range orders {
